@@ -1,4 +1,4 @@
-## About The Project
+## About
 
 Integrates the garmin R10 with the GSPro software.
 This is for personal use only and I am not responsible for what you do with it!
