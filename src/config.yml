@@ -6,5 +6,4 @@ gspro:
   ip_address: 127.0.0.1
   port: 921
 garmin:
-  ip_address: 192.168.1.5
   port: 2483

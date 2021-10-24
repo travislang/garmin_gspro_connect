@@ -1,31 +1,48 @@
 import socket
 import sys
 import json
+import logging
 from shot_data import BallData, ClubHeadData
 
 
 # s.close()
 
+def get_ip_address():
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.shutdown()
+        return ip
+
 
 class GarminConnect:
-    def __init__(self, ip_address, port) -> None:
+    def __init__(self, port) -> None:
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._client = ''
         self._handshake_step = 1
         self._listening = 'false'
         self._ballData = BallData
         self._clubData = ClubHeadData
+        self._ip_address = get_ip_address()
+        self._port = port
 
-        print('GarminConnect socket created')
+        print('Open the E6 option within the garmin app.  Make sure these settings match:')
+        print("IP Address:" + self._ip_address)
+        print("Port:" + self._port)
+
         #Bind socket to local host and port
         try:
-            self._socket.bind((ip_address, port))
+            self._socket.bind((self.ip_address, port))
         except socket.error as msg:
             print('Bind failed. Error Code : ')
             print(msg)
             sys.exit()
 
         self._socket.listen(10)
+
+    
+    
+
 
     def spoof_handshake(self):
         step1 = '{"Challenge": "gQW3om37uK4OOU4FXQH9GWgljxOrNcL5MvubVHAtQC0x6Z1AwJTgAIKyamJJMzm9", "E6Version": "2, 0, 0, 0", "ProtocolVersion": "1.0.0.5", "RequiredProtocolVersion": "1.0.0.0", "Type": "Handshake"}'
@@ -46,13 +63,9 @@ class GarminConnect:
         while self._client and self._handshake_step < 3:
             data = self._client.recv(10000)
             if data:
-                print('garminConnect handshake data recieved')
-                print(data.decode('UTF-8'))
-
                 self._client.sendall(self.spoof_handshake())
-
                 self._handshake_step += 1
-
+                
         return
 
     def listen(self):

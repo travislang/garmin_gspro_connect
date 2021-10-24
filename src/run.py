@@ -54,13 +54,11 @@ def main():
         # # send a heartbeat?
         # r10Connect.send_heartbeat()
 
-        _logger.info("Connecting to garmin...")
-        garminConnect = GarminConnect(
-            _cfg["garmin"]["ip_address"], _cfg["garmin"]["port"])
-        garminConnect.init_handshake()
-        _logger.info("garmin connected")
+        garminConnect = GarminConnect( _cfg["garmin"]["port"])
+        _logger.info("Listening for Garmin R10...")
 
-        # r10Socket.listen()
+        garminConnect.init_handshake()
+        _logger.info("garmin R10 connected")
 
         garminConnect.listenForShots(gsProConnect)
 
