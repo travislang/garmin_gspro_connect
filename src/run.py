@@ -4,7 +4,7 @@ import yaml
 import socket
 
 # from golf_shot import BallData, ClubHeadData
-from gsproconnect import GSProConnect
+from gsproConnect import GSProConnect
 from garminConnect import GarminConnect
 import pathlib
 
