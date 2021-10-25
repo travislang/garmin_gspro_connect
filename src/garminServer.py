@@ -68,8 +68,8 @@ class GarminConnect:
             print('no response data')
             return
 
-    def sendPong(self):
-        self._client.sendall('{"Type":"Pong"}'.encode('UTF-8'))
+    def sendPing(self):
+        self._client.sendall('{"SubType":"Ping","Type":"SimCommand"}'.encode('UTF-8'))
 
     def sendFakeShot(self,gsProConnect):
            # # simulate a :BOMB:
@@ -89,22 +89,38 @@ class GarminConnect:
 
         gsProConnect.launch_ball(self._ballData, self._clubData)
 
-
-    def sendBallData(self, ballData, gsProConnect):
+    def setBallData(self, ballData):
+        # from garmin
+        # {"BallData":{"BallSpeed":103.35501,"LaunchAngle":17.773596,
+        # "LaunchDirection":-5.006505,"SpinAxis":353.39822,"TotalSpin":4721.594},"Type":"SetBallData"} 
+ 
         self._ballData = BallData(
             ballspeed=ballData['BallSpeed'],
             spinaxis=ballData['SpinAxis'],
             totalspin=ballData['TotalSpin'],
-            backspin=ballData['BackSpin'],
-            sidespin=ballData['SideSpin'],
             hla=ballData['LaunchDirection'],
             vla=ballData['LaunchAngle'],
+            # backspin=ballData['BackSpin'],
+            # sidespin=ballData['SideSpin'],
             # carry=ballData['CarryDistance'],
         )
 
-        self._clubData = ClubHeadData()
+        self._client.sendall('{"Details":"Success.","SubType":"SetBallData","Type":"ACK"}'.encode('UTF-8'))
 
+    def setClubData(self, clubData):
+        # {"Type":"SetClubData","ClubData":{"ClubAngleFace":-2.421215295791626,
+        # "ClubHeadSpeed":75.21638488769531,"ClubAnglePath":-10.283570289611816}}
+        self._clubData = ClubHeadData(
+            speed=clubData['ClubHeadSpeed'],
+        )
+
+        self._client.sendall('{"Details":"Success.","SubType":"SetClubData","Type":"ACK"}'.encode('UTF-8'))
+
+    def sendShot(self, gsProConnect):
         gsProConnect.launch_ball(self._ballData, self._clubData)
+
+        self._client.sendall('{"Details":"Success.","SubType":"SendShot","Type":"ACK"}'.encode('UTF-8'))
+
 
     def disconnect(self):
         if self._client:
@@ -142,18 +158,16 @@ class GarminConnect:
 
                     if(dataObj['Type'] == 'Handshake'):
                         self.handle_handshake()
-                    elif(dataObj['Type'] == 'Disconnect'):
-                        self.disconnect()
-                    elif(dataObj['Type'] == 'SimCommand'):
-                        if(dataObj['SubType'] == 'Ping'):
-                            self.sendPong()
-                        elif(dataObj['SubType'] == 'ShotComplete'):
-                            self.sendBallData(
-                                dataObj['Details']['BallData'], gsProConnect)
                     elif(dataObj['Type'] == 'SetClubType'):
                         self.sendFakeShot(gsProConnect)
-                    # elif(dataObj['Type'] == 'SetBallData'):
-                    #     self.setBallData(dataObj['Type'])
+                    elif(dataObj['Type'] == 'SetBallData'):
+                        self.setBallData(dataObj['BallData'])
+                    elif(dataObj['Type'] == 'SetClubData'):
+                        self.setClubData(dataObj['ClubData'])
+                    elif(dataObj['Type'] == 'SendShot'):
+                        self.sendShot(gsProConnect)
+                    # elif(dataObj['Type'] == 'Pong'):
+                    #     self.resetTimer()
                     continue
 
     def terminate_session(self):
