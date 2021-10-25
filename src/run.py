@@ -5,8 +5,12 @@ import socket
 
 # from golf_shot import BallData, ClubHeadData
 from gsproConnect import GSProConnect
-from garminConnect import GarminConnect
+from garminServer import GarminConnect
 import pathlib
+import sys, signal
+
+
+
 
 
 # configure log.
@@ -17,6 +21,9 @@ logging.basicConfig(
 )
 _logger = logging.getLogger(__file__)
 
+def signal_handler(signal, frame):
+    print("\nprogram exiting gracefully")
+    sys.exit()
 
 def load_base_config():
     import os
@@ -33,6 +40,8 @@ def load_base_config():
 
 
 def main():
+    # signal.signal(signal.SIGINT, signal_handler)
+
     try:
         # read base config file:
         _cfg = load_base_config()
@@ -49,24 +58,25 @@ def main():
 
         _logger.info("Connecting to GSPro...")
         # open tcp connection from config.
-        # gsProConnect.init_socket(
-        #     _cfg["gspro"]["ip_address"], _cfg["gspro"]["port"])
-        # # send a heartbeat?
-        # r10Connect.send_heartbeat()
+        gsProConnect.init_socket(
+            _cfg["gspro"]["ip_address"], _cfg["gspro"]["port"])
+        gsProConnect.send_test_signal()
 
         garminConnect = GarminConnect( _cfg["garmin"]["port"])
-        _logger.info("Listening for Garmin R10...")
-
-        garminConnect.init_handshake()
-        _logger.info("garmin R10 connected")
-
-        garminConnect.listenForShots(gsProConnect)
-
         
+        while True:
+            print('starting server')
+            garminConnect.start_server(gsProConnect)
+        
+
+        # garminConnect.listenForShots(gsProConnect)
+
+    except Exception as e: print(e)
     finally:
-        # #  Close this socket port.
-        gsProConnect.terminate_session()
-        garminConnect.terminate_session()
+        if(gsProConnect):
+            gsProConnect.terminate_session()
+        # if(garminConnect):
+        #     garminConnect.terminate_session()
 
 
 if __name__ == "__main__":

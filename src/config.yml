@@ -2,7 +2,7 @@ device_id: 'Garmin R10'
 units: 'Yards'
 club_data: False
 gspro:
-  api_version: 1
+  api_version: "1"
   ip_address: 127.0.0.1
   port: 921
 garmin:
