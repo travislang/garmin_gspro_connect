@@ -77,11 +77,8 @@ class GarminConnect:
             ballspeed=126.8,
             spinaxis=-13.2,
             totalspin=2350.2,
-            backspin=2350.2,
-            sidespin=0.0,
             hla=0.0,
             vla=13.5,
-            carry=300.0,
         )
 
         # not supported yet
@@ -143,7 +140,6 @@ class GarminConnect:
             try:
                 data = self._client.recv(10000)
             except socket.error as e:
-                # Something else happened, handle error, exit, etc.
                 print('non timeout error:')
                 print(e)
                 sys.exit(1)

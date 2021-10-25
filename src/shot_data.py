@@ -6,11 +6,11 @@ class BallData:
     ballspeed: float = field(default=0.0)
     spinaxis: float = field(default=0.0)
     totalspin: float = field(default=0.0)
-    backspin: float = field(default=0.0)
-    sidespin: float = field(default=0.0)
+    # backspin: float = field(default=0.0)
+    # sidespin: float = field(default=0.0)
     hla: float = field(default=0.0)
     vla: float = field(default=0.0)
-    carry: float = field(default=0)
+    # carry: float = field(default=0)
 
 
 @dataclass
