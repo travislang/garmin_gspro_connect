@@ -13,16 +13,9 @@ To run this application, your system must have python3.  Install directions: htt
 
 clone this repo
 
-Open the `config.yml` file and add your local computer IP and port to the garmin section:
-```
-garmin:
-  port: 2483
-```
-Keep everything else the same
-
 Start GSPro and make sure you have GSPro Connect running.  There is times where you may need to restart the API Connect window so it's a good idea to add a shortcut to your desktop.
 
-Open command line and get to this directory.  Run this command `python run.py/`
+Open the command line and get to this directory.  Run this command `python run.py/`
 
 You will see an IP and port in the temrinal.
 
