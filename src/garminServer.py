@@ -116,8 +116,9 @@ class GarminConnect:
     def sendShot(self, gsProConnect):
         gsProConnect.launch_ball(self._ballData, self._clubData)
 
+        
         self._client.sendall('{"Details":"Success.","SubType":"SendShot","Type":"ACK"}'.encode('UTF-8'))
-
+        self._client.sendall('{"SubType":"Disarm","Type":"SimCommand"}'.encode('UTF-8'))
 
     def disconnect(self):
         if self._client:
@@ -138,7 +139,7 @@ class GarminConnect:
     def listen(self, gsProConnect):
         while self._listening and self._client:
             try:
-                data = self._client.recv(10000)
+                data = self._client.recv(12000)
             except socket.error as e:
                 print('non timeout error:')
                 print(e)
@@ -150,7 +151,7 @@ class GarminConnect:
                 else:
                     dataObj = json.loads(data.decode('UTF-8'))
                     print('garminConnect data recieved')
-                    print(dataObj['Type'])
+                    print(dataObj)
 
                     if(dataObj['Type'] == 'Handshake'):
                         self.handle_handshake()
