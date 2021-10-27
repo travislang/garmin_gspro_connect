@@ -128,6 +128,10 @@ class GarminConnect:
         self.sendShot()
 
     def setBallData(self, ballData):
+        spinAxis = ballData['SpinAxis']
+        if(spinAxis > 90):
+             spinAxis -= 360
+        spinAxis *= -1
         self._ballData = BallData(
             ballspeed=ballData['BallSpeed'],
             spinaxis=ballData['SpinAxis'],
