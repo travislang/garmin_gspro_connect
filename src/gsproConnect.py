@@ -34,22 +34,22 @@ class GSProConnect:
                 self._socket.sendall(json.dumps(payload).encode("utf-8"))
                 msg = self._socket.recv(8096)
             except socket.timeout as e:
-                print('timed out...')
+                print('timed out. Retrying...')
                 sleep(1)
                 continue
             except socket.error as e:
                 print('Error waiting for GSPro response:')
                 print(e)
                 raise
-                # sys.exit(1)
             else:
                 if len(msg) == 0:
                     print('GS Pro closed connection')
                     return False
                 else:
                     print("response from GSPro: ")
-                    print(msg)
+                    print(msg.decode('UTF-8'))
                     return True
+        print('passed loop')
         return False
             
 
@@ -64,8 +64,12 @@ class GSProConnect:
                 "ContainsClubData": False,
             },
         }
-        self.send_msg(payload)
-        print('GSPro Connected...')
+        
+        resp = self.send_msg(payload)
+        if(resp):
+            print('GSPro Connected...')
+        else:
+            raise Exception
 
     def launch_ball(self, ball_data: BallData, club_data: ClubHeadData = None) -> None:
         api_data = {

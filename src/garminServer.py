@@ -32,7 +32,7 @@ class GarminConnect:
 
         print('Starting Garmin Server...')
 
-        print('Open the E6 option within the garmin app.  Make sure these settings match: \n')
+        print('\nOpen the E6 option within the garmin app.  Make sure these settings match: \n')
         print("IP Address: " + self._ip_address)
         print("Port: " + str(self._port) + '\n')
 
@@ -43,7 +43,7 @@ class GarminConnect:
             print(msg)
             sys.exit()
 
-        self._server.settimeout(300)
+        self._server.settimeout(3)
         self._server.listen(5)
 
     def listen_for_response(self):
@@ -62,12 +62,13 @@ class GarminConnect:
                 sys.exit()
             else:
                 print("response from GSPro Connect")
-                print(msg)
+                print(msg.decode('UTF-8'))
                 return msg
 
     def wait_for_message(self):
         while True:
             try:
+                print('Waiting for message from R10...')
                 msg = self._client.recv(10000)
             except socket.timeout as e:
                 continue
@@ -100,7 +101,7 @@ class GarminConnect:
             self.disconnect()
         elif(dataObj['Hash']):
             self._client.sendall(self._simMessages.get_handshake_message(2))
-            self.listen_for_response()
+            # self.listen_for_response()
             print('handshake successful')
             
             return True
@@ -112,6 +113,9 @@ class GarminConnect:
         self._clubType = clubType
 
         self._client.sendall(self._simMessages.get_success_message('SetClubType'))
+
+        if(clubType == 'SandWedge'):
+            self.sendTestShot()
 
     def sendTestShot(self, ballSpeed=128.5):
         self._ballData = BallData(
@@ -148,10 +152,7 @@ class GarminConnect:
 
         self._client.sendall(self._simMessages.get_success_message('SendShot'))
 
-        self.listen_for_response()
-
         self._client.sendall(self._simMessages.get_shot_response_message())
-        self.listen_for_response()
 
         self._client.sendall(self._simMessages.get_sim_command('Disarm'))
 
@@ -166,13 +167,17 @@ class GarminConnect:
         self._listening = False
 
     def start_server(self):
-        print('Waiting for connection from R10...')
-        conn, addr = self._server.accept()
-        print('Connected with ' + addr[0] + ':' + str(addr[1]))
-        self._client = conn
-        self._client.settimeout(2)
+        while True:
+            try:
+                print('Waiting for connection from R10...')
+                conn, addr = self._server.accept()
+                print('Connected with ' + addr[0] + ':' + str(addr[1]))
+                self._client = conn
+                self._client.settimeout(2)
 
-        self.listen()
+                self.listen()
+            except KeyboardInterrupt:
+                raise
 
     def listen(self):
         while self._listening and self._client:

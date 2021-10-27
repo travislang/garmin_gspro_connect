@@ -2,7 +2,7 @@ import json
 
 class simMessages:
     
-    def get_success_message(type):
+    def get_success_message(self, type):
         message = {
             "Details":"Success.",
             "SubType":type,
@@ -10,14 +10,14 @@ class simMessages:
         }
         return json.dumps(message).encode('UTF-8')
 
-    def get_sim_command(type):
+    def get_sim_command(self, type):
         message = {
             "SubType":"Disarm",
             "Type":type
         }
         return json.dumps(message).encode('UTF-8')
 
-    def get_handshake_message(step):
+    def get_handshake_message(self, step):
         if(step == 1):
             message = {
                 "Challenge": "gQW3om37uK4OOU4FXQH9GWgljxOrNcL5MvubVHAtQC0x6Z1AwJTgAIKyamJJMzm9", "E6Version": "2, 0, 0, 0",
@@ -38,7 +38,7 @@ class simMessages:
             
         return json.dumps(message).encode('UTF-8')
 
-    def get_shot_response_message():
+    def get_shot_response_message(self):
         message = {
             "Details":{
                 "Apex":62.2087860107422,

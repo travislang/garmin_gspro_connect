@@ -54,9 +54,12 @@ def main():
 
         def check_gspro_status():
             for attempt in range(10):
+                print('checking gs pro status')
                 try:
                     gsProConnect.send_test_signal()
                     return
+                except KeyboardInterrupt:
+                    raise
                 except:
                     start_gspro()
                     continue
@@ -67,7 +70,7 @@ def main():
         while True:
             print('starting Garmin server')
             try:
-                garminConnect.start_server(gsProConnect)
+                garminConnect.start_server()
             except socket.timeout as e:
                 garminConnect.disconnect()
                 print('Trying to reconnect...')
@@ -80,11 +83,14 @@ def main():
                 check_gspro_status()
                 garminConnect = GarminConnect(gsProConnect, _config["garmin"]["port"])
                 continue
+            except KeyboardInterrupt:
+                break
             except Exception as e:
                 _logger.exception("General error: {e}")
                 break
 
     finally:
+        print('closing sockets')
         if(gsProConnect):
             gsProConnect.terminate_session()
         if(garminConnect):
