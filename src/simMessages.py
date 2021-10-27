@@ -12,8 +12,8 @@ class simMessages:
 
     def get_sim_command(self, type):
         message = {
-            "SubType":"Disarm",
-            "Type":type
+            "SubType":type,
+            "Type":"SimCommand"
         }
         return json.dumps(message).encode('UTF-8')
 
@@ -38,7 +38,7 @@ class simMessages:
             
         return json.dumps(message).encode('UTF-8')
 
-    def get_shot_response_message(self):
+    def get_shot_complete_message(self):
         message = {
             "Details":{
                 "Apex":62.2087860107422,

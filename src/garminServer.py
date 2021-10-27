@@ -150,7 +150,7 @@ class GarminConnect:
 
         self._client.sendall(self._simMessages.get_success_message('SendShot'))
 
-        self._client.sendall(self._simMessages.get_shot_response_message())
+        self._client.sendall(self._simMessages.get_shot_complete_message())
 
         self._client.sendall(self._simMessages.get_sim_command('Disarm'))
 
