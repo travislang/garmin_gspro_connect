@@ -86,8 +86,9 @@ def main():
             except KeyboardInterrupt:
                 break
             except Exception as e:
-                _logger.exception("General error: {e}")
-                break
+                _logger.exception("General error: ")
+                _logger.exception(e)
+                continue
 
     finally:
         print('closing sockets')

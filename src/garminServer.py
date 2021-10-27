@@ -97,9 +97,7 @@ class GarminConnect:
             print(data.decode('UTF-8'))
             return False
 
-        if(dataObj['Type'] == 'Disconnect'):
-            self.disconnect()
-        elif(dataObj['Hash']):
+        if(dataObj['Hash']):
             self._client.sendall(self._simMessages.get_handshake_message(2))
             # self.listen_for_response()
             print('handshake successful')
@@ -201,6 +199,8 @@ class GarminConnect:
                             break
                         else:
                             continue
+            elif(dataObj['Type'] == 'Disconnect'):
+                self.disconnect()
             elif(dataObj['Type'] == 'SetClubType'):
                 self.updateClubType(dataObj['ClubType'])
             elif(dataObj['Type'] == 'SetBallData'):
