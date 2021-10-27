@@ -15,7 +15,7 @@ clone this repo
 
 Start GSPro and make sure you have GSPro Connect running.  There is times where you may need to restart the API Connect window so it's a good idea to add a shortcut to your desktop.
 
-Open the command line and get to this directory.  Run this command `python run.py/`
+Open the command line and `cd` to this directory.  Run this command `python run.py/`
 
 You will see an IP and port in the temrinal.
 
