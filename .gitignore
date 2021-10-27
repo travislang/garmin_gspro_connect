@@ -3,6 +3,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+src/testing.txt
+
 # C extensions
 *.so
 

@@ -105,20 +105,36 @@ class GarminConnect:
         self._client.sendall('{"Details":"Success.","SubType":"SetBallData","Type":"ACK"}'.encode('UTF-8'))
 
     def setClubData(self, clubData):
-        # {"Type":"SetClubData","ClubData":{"ClubAngleFace":-2.421215295791626,
-        # "ClubHeadSpeed":75.21638488769531,"ClubAnglePath":-10.283570289611816}}
         self._clubData = ClubHeadData(
             speed=clubData['ClubHeadSpeed'],
         )
 
         self._client.sendall('{"Details":"Success.","SubType":"SetClubData","Type":"ACK"}'.encode('UTF-8'))
 
+
     def sendShot(self, gsProConnect):
+        self._client.sendall('{"Details":"Success.","SubType":"SendShot","Type":"ACK"}'.encode('UTF-8'))
+
         gsProConnect.launch_ball(self._ballData, self._clubData)
 
-        
-        self._client.sendall('{"Details":"Success.","SubType":"SendShot","Type":"ACK"}'.encode('UTF-8'))
-        self._client.sendall('{"SubType":"Disarm","Type":"SimCommand"}'.encode('UTF-8'))
+        data = self._client.recv(1096)
+        if data:
+            self._client.sendall('{"Details":{"Apex":62.2087860107422,"BallData":{"BackSpin":4690.28662109375,"BallSpeed":151.587356567383,"LaunchAngle":17.7735958099365,"LaunchDirection":-5.00650501251221,"SideSpin":-542.832092285156,"SpinAxis":353.398223876953,"TotalSpin":4721.59423828125},"BallInHole":false,"BallLocation":"Fringe","CarryDeviationAngle":357.429321289063,"CarryDeviationFeet":-19.5566101074219,"CarryDistance":436.027191162109,"ClubData":{"ClubAngleFace":-2.42121529579163,"ClubAnglePath":-10.2835702896118,"ClubHeadSpeed":110.317367553711,"ClubHeadSpeedMPH":75.2163848876953,"ClubType":"7Iron","SmashFactor":1.37410235404968},"DistanceToPin":122.404106140137,"TotalDeviationAngle":356.053466796875,"TotalDeviationFeet":-32.0723648071289,"TotalDistance":465.995697021484},"SubType":"ShotComplete","Type":"SimCommand"}'.encode('UTF-8'))
+            
+            resp = self._client.recv(1096)
+
+            if(resp):
+                self._client.sendall('{"SubType":"Disarm","Type":"SimCommand"}'.encode('UTF-8'))
+
+                print('Garmin ready for next shot...')
+                return
+        else:
+            print('shot corrupted from garmin.  Try another shot...')
+            self._client.sendall('{"SubType":"Disarm","Type":"SimCommand"}'.encode('UTF-8'))
+
+            return
+
+           
 
     def disconnect(self):
         if self._client:
@@ -149,9 +165,15 @@ class GarminConnect:
                     print('orderly shutdown on server end')
                     sys.exit(0)
                 else:
-                    dataObj = json.loads(data.decode('UTF-8'))
                     print('garminConnect data recieved')
-                    print(dataObj)
+                    try:
+                        dataObj = json.loads(data.decode('UTF-8'))
+                    except ValueError:
+                        print('unable to parse data:')
+                        print(data.decode('UTF-8'))
+                        continue
+                    
+                    print(dataObj['Type'])
 
                     if(dataObj['Type'] == 'Handshake'):
                         self.handle_handshake()

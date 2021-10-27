@@ -10,3 +10,16 @@ garminConnect data recieved
 {'Type': 'SetClubData', 'ClubData': {'ClubHeadSpeed': 85.49102454766853, 'ClubAnglePath': -1.193796157836914, 'ClubAngleFace': 1.531001329421997}}
 Extra data: line 1 column 20 (char 19)
 PS C:\Users\tlang\Documents\dev\garmin_gspro_connect>
+
+
+
+
+from server {"Details":{"ClubType":"5Wood","Handedness":"Right","PlayerName":"Guest.1","UserID":"fa686825-bc1a-4e4d-9a4f-770f27c7f10e"},"SubType":"PlayerDataModified","Type":"SimCommand"}
+
+from server {"Details":{"BallOnTee":true,"BallPosition":{"X":7071.5732421875,"Y":4927.40234375,"Z":148.343658447266},"CameraDirection":{"X":-0.0,"Y":1.0,"Z":-0.0},"DistanceToPin":578.579711914063,"Elevation":0.0,"PinPosition":{"X":7084.8330078125,"Y":5505.830078125,"Z":153.040679931641},"TeeHeight":0.0,"TerrainNormal":{"X":0.0,"Y":0.0,"Z":1.0},"TerrainType":"Fairway","Wind":{"X":-0.0298118833452463,"Y":0.99955552816391,"Z":0.0},"WindRelativeToCameraDirection":{"X":-0.0298120342195034,"Y":0.99955552816391,"Z":0.0},"WindSpeed":0.0},"SubType":"EnvironmentDataModified","Type":"SimCommand"}
+
+from server {"SubType":"Arm","Type":"SimCommand"}
+
+from server 
+
+from server {"SubType":"Disarm","Type":"SimCommand"}
