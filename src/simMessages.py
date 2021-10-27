@@ -70,4 +70,4 @@ class simMessages:
             "SubType":"ShotComplete",
             "Type":"SimCommand"
         }
-        return json.dumps(message).encode('UTF-8')
+        return json.dumps(message, indent=4).encode('UTF-8')

@@ -21,50 +21,37 @@ class GSProConnect:
         self._send_club_data = club_data
 
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._shot_number = 2
+        self._shot_number = 1
 
     def init_socket(self, ip_address, port):
         self._socket.connect((ip_address, port))
         self._socket.settimeout(2)
 
-    # def handleResponse(self, msg):
-    #     # TODO handle
-
-    def send_msg(self, payload):
-        print('payload')
-        print(json.dumps(payload))
-        self._socket.sendall(json.dumps(payload).encode("utf-8"))
-        _logger.info("sending message to GSPro Connect...")
-        
-        while True:
+    def send_msg(self, payload, attempts=10):
+        for attempt in range(attempts):
             try:
+                _logger.info("sending message to GSPro...")
+                self._socket.sendall(json.dumps(payload).encode("utf-8"))
                 msg = self._socket.recv(8096)
             except socket.timeout as e:
-                err = e.args[0]
-                # this next if/else is a bit redundant, but illustrates how the
-                # timeout exception is setup
-                if err == 'timed out':
-                    sleep(1)
-                    print('recv timed out, retry later')
-                    continue
-                else:
-                    print('other timeout error:')
-                    print(e)
-                    sys.exit(1)
+                print('timed out...')
+                sleep(1)
+                continue
             except socket.error as e:
-                # Something else happened, handle error, exit, etc.
-                print('non timeout error:')
+                print('Error waiting for GSPro response:')
                 print(e)
-                sys.exit(1)
+                raise
+                # sys.exit(1)
             else:
                 if len(msg) == 0:
-                    print('orderly shutdown on server end')
-                    sys.exit(0)
+                    print('GS Pro closed connection')
+                    return False
                 else:
-                    print("response from GSPro Connect")
+                    print("response from GSPro: ")
                     print(msg)
-                    # self.handleResponse(msg)
-                    break
+                    return True
+        return False
+            
 
     def send_test_signal(self):
         payload = {
@@ -75,17 +62,12 @@ class GSProConnect:
             "ShotDataOptions": {
                 "ContainsBallData": False,
                 "ContainsClubData": False,
-                "LaunchMonitorIsReady": True,
-                "LaunchMonitorBallDetected": True,
-                "IsHeartBeat": True,
             },
         }
         self.send_msg(payload)
         print('GSPro Connected...')
 
     def launch_ball(self, ball_data: BallData, club_data: ClubHeadData = None) -> None:
-        _logger.info("Sending launch data")
-
         api_data = {
             "DeviceID": self._device_id,
             "Units": self._units,
@@ -105,7 +87,7 @@ class GSProConnect:
         }
 
         if self._send_club_data:
-            api_data["ShotDataOptions"]["ContainsClubData"] = "true"
+            api_data["ShotDataOptions"]["ContainsClubData"] = True
             api_data["ClubData"] = {
                 "Speed": club_data.speed,
                 "AngleOfAttack": club_data.angleofattack,
@@ -128,4 +110,3 @@ class GSProConnect:
     def terminate_session(self):
         if(self._socket):
             self._socket.close()
-            # self._socket.shutdown(socket.SHUT_RDWR)

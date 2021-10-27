@@ -32,22 +32,37 @@ def main():
     try:
         _config = load_base_config()
 
-        # create GSPro Connect class
-        gsProConnect = GSProConnect(
-            _config["device_id"],
-            _config["units"],
-            _config["gspro"]["api_version"],
-            _config["club_data"],
-        )
+        def start_gspro():
+            global gsProConnect
+            # create GSPro Connect class
+            gsProConnect = GSProConnect(
+                _config["device_id"],
+                _config["units"],
+                _config["gspro"]["api_version"],
+                _config["club_data"],
+            )
 
-        _logger.info("Connecting to GSPro...")
+            _logger.info("Connecting to GSPro...")
 
-        gsProConnect.init_socket(
-            _config["gspro"]["ip_address"], _config["gspro"]["port"])
-        gsProConnect.send_test_signal()
+            gsProConnect.init_socket(
+                _config["gspro"]["ip_address"], _config["gspro"]["port"])
+
+        start_gspro()
 
         # create R10 class
         garminConnect = GarminConnect(gsProConnect, _config["garmin"]["port"])
+
+        def check_gspro_status():
+            for attempt in range(10):
+                try:
+                    gsProConnect.send_test_signal()
+                    return
+                except:
+                    start_gspro()
+                    continue
+            raise Exception
+
+        check_gspro_status()
         
         while True:
             print('starting Garmin server')
@@ -62,6 +77,7 @@ def main():
                 print('Error occured waiting for R10 response:')
                 sleep(2)
                 garminConnect.terminate_session()
+                check_gspro_status()
                 garminConnect = GarminConnect(gsProConnect, _config["garmin"]["port"])
                 continue
             except Exception as e:
