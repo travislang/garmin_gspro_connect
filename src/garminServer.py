@@ -134,7 +134,7 @@ class GarminConnect:
         spinAxis *= -1
         self._ballData = BallData(
             ballspeed=ballData['BallSpeed'],
-            spinaxis=ballData['SpinAxis'],
+            spinaxis=spinAxis,
             totalspin=ballData['TotalSpin'],
             hla=ballData['LaunchDirection'],
             vla=ballData['LaunchAngle'],
