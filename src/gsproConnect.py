@@ -93,15 +93,15 @@ class GSProConnect:
             "APIversion": self._api_version,
             "BallData": {
                 "Speed": ball_data.ballspeed,
-                # "SpinAxis": ball_data.spinaxis,
+                "SpinAxis": ball_data.spinaxis,
                 "TotalSpin": ball_data.totalspin,
-                # "BackSpin": ball_data.backspin,
-                # "SideSpin": ball_data.sidespin,
                 "HLA": ball_data.hla,
                 "VLA": ball_data.vla,
-                # "CarryDistance": ball_data.carry,
             },
-            "ShotDataOptions": {"ContainsBallData": True, "ContainsClubData": False, },
+            "ShotDataOptions": {
+                "ContainsBallData": True, 
+                "ContainsClubData": False
+            },
         }
 
         if self._send_club_data:
