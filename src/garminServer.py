@@ -154,6 +154,9 @@ class GarminConnect:
 
         self._client.sendall(self._simMessages.get_sim_command('Disarm'))
 
+        sleep(1)
+        self._client.sendall(self._simMessages.get_sim_command('Arm'))
+
         print('R10 is ready for next shot...')
 
     def disconnect(self):
